@@ -1,0 +1,623 @@
+basePath: /v2
+definitions:
+  models.Category:
+    properties:
+      id:
+        example: 4
+        type: integer
+      name:
+        example: rabbit
+        type: string
+    type: object
+  models.Order:
+    properties:
+      complete:
+        example: true
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      petId:
+        example: 1
+        type: integer
+      quantity:
+        example: 10
+        type: integer
+      shipDate:
+        example: "2022-01-01T06:29:51.438Z"
+        type: string
+      status:
+        example: placed
+        type: string
+    type: object
+  models.Pet:
+    properties:
+      category:
+        $ref: '#/definitions/models.Category'
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Daisy
+        type: string
+      photoUrls:
+        items:
+          type: string
+        type: array
+      status:
+        example: available
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+    type: object
+  models.Tag:
+    properties:
+      id:
+        example: 3
+        type: integer
+      name:
+        example: gift
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        example: wick@continental.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      id:
+        example: 1
+        type: integer
+      lastName:
+        example: Wick
+        type: string
+      password:
+        example: admin
+        type: string
+      phone:
+        example: 8-999-666-99-66
+        type: string
+      userStatus:
+        example: 1
+        type: integer
+      username:
+        example: admin
+        type: string
+    type: object
+  responder.Response:
+    properties:
+      code:
+        example: 200
+        type: integer
+      message:
+        example: user deleted
+        type: string
+      type:
+        example: any
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  title: Swagger Petstore
+  version: 1.0.7
+paths:
+  /pet:
+    post:
+      consumes:
+      - application/json
+      operationId: 2addPet
+      parameters:
+      - description: Pet object that needs to be added to the store
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pet'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a new pet to the store
+      tags:
+      - pet
+      x-sort: 2
+    put:
+      consumes:
+      - application/json
+      operationId: 3updatePet
+      parameters:
+      - description: Pet object that needs to be added to the store
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pet'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing pet
+      tags:
+      - pet
+      x-sort: 3
+  /pet/{petId}:
+    delete:
+      consumes:
+      - application/json
+      operationId: 8deletePet
+      parameters:
+      - description: Pet id to delete
+        in: path
+        name: petId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Deletes a pet
+      tags:
+      - pet
+      x-sort: 8
+    get:
+      consumes:
+      - application/json
+      operationId: 6getPetById
+      parameters:
+      - description: ID of pet to return
+        in: path
+        name: petId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pet'
+      security:
+      - ApiKeyAuth: []
+      summary: Find pet by ID
+      tags:
+      - pet
+      x-sort: 6
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      operationId: 7updatePetWithForm
+      parameters:
+      - description: ID of pet that needs to be updated
+        in: path
+        name: petId
+        required: true
+        type: integer
+      - description: Updated name of the pet
+        in: formData
+        name: name
+        type: string
+      - description: Updated status of the pet
+        in: formData
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Updates a pet in the store with form data
+      tags:
+      - pet
+      x-sort: 7
+  /pet/{petId}/uploadImage:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: 1uploadFile
+      parameters:
+      - description: ID of pet to update
+        in: path
+        name: petId
+        required: true
+        type: integer
+      - description: Additional data to pass to server
+        in: formData
+        name: additionalMetadata
+        type: string
+      - description: file to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: uploads an image
+      tags:
+      - pet
+      x-sort: 1
+  /pet/findByStatus:
+    get:
+      consumes:
+      - application/json
+      description: Multiple status values can be provided with comma separated strings
+      operationId: 4findPetsByStatus
+      parameters:
+      - collectionFormat: csv
+        description: Status values that need to be considered for filter
+        in: query
+        items:
+          enum:
+          - available
+          - pending
+          - sold
+          type: string
+        name: status
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Pet'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: Finds Pets by status
+      tags:
+      - pet
+      x-sort: 4
+  /pet/findByTags:
+    get:
+      consumes:
+      - application/json
+      deprecated: true
+      operationId: 5findPetsByTags
+      parameters:
+      - collectionFormat: csv
+        description: Tags to filter by
+        in: query
+        items:
+          type: string
+        name: tags
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Pet'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: Finds Pets by tags
+      tags:
+      - pet
+      x-sort: 5
+  /store/inventory:
+    get:
+      consumes:
+      - application/json
+      description: Returns a map of status codes to quantities
+      operationId: 1getInventory
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Returns pet inventories by status
+      tags:
+      - store
+  /store/order:
+    post:
+      consumes:
+      - application/json
+      operationId: 2placeOrder
+      parameters:
+      - description: order placed for purchasing the pet
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/models.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+      summary: Place an order for a pet
+      tags:
+      - store
+  /store/order/{orderId}:
+    delete:
+      consumes:
+      - application/json
+      description: For valid response try integer IDs with positive integer value.
+        Negative or non-integer values will generate API errors
+      operationId: 4deleteOrder
+      parameters:
+      - description: ID of pet that needs to be deleted
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Delete purchase order by ID
+      tags:
+      - store
+    get:
+      consumes:
+      - application/json
+      description: For valid response try integer IDs with value >= 1 and <= 10. Other
+        values will generated exceptions
+      operationId: 3getOrderById
+      parameters:
+      - description: ID of pet that needs to be fetched
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+      summary: Find purchase order by ID
+      tags:
+      - store
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: This can only be done by the logged in user.
+      operationId: 8createUser
+      parameters:
+      - description: Created user object
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Create user
+      tags:
+      - user
+  /user/{username}:
+    delete:
+      consumes:
+      - application/json
+      description: This can only be done by the logged in user.
+      operationId: 4deleteUser
+      parameters:
+      - description: The name that needs to be deleted
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Delete user
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      operationId: 2getUserByName
+      parameters:
+      - description: The name that needs to be fetched. Use admin for testing.
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Get user by user name
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: This can only be done by the logged in user.
+      operationId: 3updateUser
+      parameters:
+      - description: name that need to be updated
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Updated user object
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Updated user
+      tags:
+      - user
+  /user/createWithArray:
+    post:
+      consumes:
+      - application/json
+      operationId: 7createUsersWithArrayInput
+      parameters:
+      - description: List of user object
+        in: body
+        name: object
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.User'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Creates list of users with given input array
+      tags:
+      - user
+  /user/createWithList:
+    post:
+      consumes:
+      - application/json
+      operationId: 1createUsersWithListInput
+      parameters:
+      - description: List of user object
+        in: body
+        name: object
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.User'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Creates list of users with given input array
+      tags:
+      - user
+  /user/login:
+    get:
+      consumes:
+      - application/json
+      operationId: 5loginUser
+      parameters:
+      - default: admin
+        description: The user name for login
+        in: query
+        name: username
+        required: true
+        type: string
+      - default: admin
+        description: The password for login in clear text
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Expires-After:
+              description: date in UTC when token expires
+              type: string
+            X-Rate-Limit:
+              description: calls per hour allowed by user
+              type: int
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Logs user into the system
+      tags:
+      - user
+  /user/logout:
+    get:
+      consumes:
+      - application/json
+      operationId: 6logoutUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responder.Response'
+      summary: Logs out current logged in user session
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: Everything about your Pets
+  name: pet
+- description: Access to Petstore orders
+  name: store
+- description: Operations about users
+  name: user
